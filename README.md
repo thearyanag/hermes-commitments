@@ -1,6 +1,10 @@
-# Commitments
+<h1 align="center">Commitments</h1>
 
-**Give Hermes a reason to check back.**
+<p align="center">
+  <strong>Give Hermes a reason to check back.</strong>
+</p>
+
+https://github.com/user-attachments/assets/ed6bb92f-43ac-4c4b-94b9-104954de110e
 
 You tell Hermes you'll send the proposal, finish the draft, or get back to someone.
 Commitments keeps track of those promises and brings them back into the conversation
