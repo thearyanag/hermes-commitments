@@ -19,12 +19,43 @@ from commitments.ledger import Ledger
 from commitments.runtime import Runtime
 
 
+@unittest.skipIf(SessionDB is None, "Requires the pinned Hermes environment")
+class HermesFixtureIsolationTests(unittest.TestCase):
+    def test_scratch_bootstrap_does_not_leave_a_deleted_temp_default(self):
+        class ScratchFixture(HermesBridgeTests):
+            def runTest(self):
+                from hermes_constants import export_scratch_tmp_env
+
+                export_scratch_tmp_env()
+                self.assertEqual(
+                    Path(tempfile.gettempdir()), self.home / "cache/scratch"
+                )
+
+        with patch.dict(os.environ), patch.object(tempfile, "tempdir", None):
+            for key in ("TMPDIR", "TMP", "TEMP", "HERMES_SCRATCH_DIR"):
+                os.environ.pop(key, None)
+            original_default = tempfile.gettempdir()
+            fixture = ScratchFixture()
+            result = unittest.TestResult()
+            fixture.run(result)
+            self.assertTrue(result.wasSuccessful(), result.errors + result.failures)
+            self.assertFalse(fixture.home.exists())
+            self.assertEqual(tempfile.gettempdir(), original_default)
+            with tempfile.TemporaryDirectory() as directory:
+                self.assertTrue(Path(directory).is_dir())
+
+
 @unittest.skipIf(
     SessionDB is None,
     "Run with the pinned Hermes environment for host integration tests",
 )
 class HermesBridgeTests(unittest.TestCase):
     def setUp(self):
+        # Hermes bootstrap may redirect Python's cached temp default into this
+        # fixture's scratch directory. Restore it as well as os.environ on exit.
+        temp_default = patch.object(tempfile, "tempdir", tempfile.tempdir)
+        temp_default.start()
+        self.addCleanup(temp_default.stop)
         self.tmp = tempfile.TemporaryDirectory(prefix="cm-bridge-")
         self.home = Path(self.tmp.name)
         self.env = patch.dict(os.environ, {"HERMES_HOME": str(self.home)})
