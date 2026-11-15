@@ -1,0 +1,25 @@
+name: commitments
+version: 0.2.0
+description: Quietly track commitments and follow through across Hermes conversations.
+author: Aryan
+requires_hermes: ">=0.23.1"
+provides_tools:
+  - commitments
+provides_hooks:
+  - pre_llm_call
+  - post_llm_call
+  - post_api_request
+  - on_session_delete
+  - on_session_reset
+  - post_compaction
+  - post_gateway_admission
+capabilities: []
+config_schema:
+  owner_identities:
+    type: array
+    default: []
+    description: Verified owner accounts as platform:user_id. Local desktop ownership is bound to this OS user.
+  poll_seconds:
+    type: number
+    default: 5
+    description: Technical worker wake interval; does not set reminder cadence.

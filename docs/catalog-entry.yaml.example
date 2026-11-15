@@ -1,0 +1,27 @@
+# Draft only: replace sha with the validated public commit before submission.
+name: commitments
+repo: https://github.com/thearyanag/hermes-commitments
+sha: REPLACE_WITH_FULL_40_CHARACTER_COMMIT_SHA
+description: Quietly capture conversational commitments and follow up through Hermes.
+maintainer: thearyanag
+tier: community
+category: automation
+requires_hermes: ">=0.23.1"
+version: "0.2.0"
+readme: true
+known_issues:
+  - Development build; full group and messaging transport support is not qualified.
+  - Local follow-ups require Desktop connected to the active profile and a running gateway.
+  - Cold/busy/restart delivery needs qualification; no universal delivery or silent cancellation guarantee.
+capabilities:
+  provides_tools: [commitments]
+  provides_hooks:
+    - pre_llm_call
+    - post_llm_call
+    - post_api_request
+    - on_session_delete
+    - on_session_reset
+    - post_compaction
+    - post_gateway_admission
+  provides_middleware: []
+  requires_env: []

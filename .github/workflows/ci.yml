@@ -1,0 +1,55 @@
+name: Release checks
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  check:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          repository: NousResearch/hermes-agent
+          ref: 3b421578588243f920886e6fe79a6faa87ea026e
+          path: .ci-hermes
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.14.9'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '26.12.1'
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: '0.13.5'
+      - name: Prepare pinned Hermes runtime
+        working-directory: .ci-hermes
+        run: uv sync --frozen --no-dev --python 3.14.9
+      - name: Export reviewed source
+        run: python scripts/package_release.py
+      - name: Test exported source and installable package
+        shell: bash
+        run: |
+          export PYTHONPATH="$GITHUB_WORKSPACE/dist/release/source:$GITHUB_WORKSPACE/.ci-hermes"
+          export HERMES_HOME="$RUNNER_TEMP/commitments-check"
+          export PYTHONDONTWRITEBYTECODE=1
+          HERMES_PYTHON="$GITHUB_WORKSPACE/.ci-hermes/.venv/bin/python"
+          cd dist/release/source
+          "$HERMES_PYTHON" -c 'from hermes_state import SessionDB; assert SessionDB'
+          "$HERMES_PYTHON" -m unittest discover -s tests -v
+          node --test tests/desktop_bridge.test.mjs
+          uv tool run --isolated --from ruff==0.15.22 ruff check *.py tests scripts
+          uv tool run --isolated --from ruff==0.15.22 ruff format --check *.py tests scripts
+          "$HERMES_PYTHON" -m hermes_cli.main plugins doctor . --ci
+          "$HERMES_PYTHON" -m hermes_cli.main plugins validate . --install-deps
+      - uses: actions/upload-artifact@v4
+        with:
+          name: commitments-source-package
+          path: |
+            dist/release/*.tar.gz
+            dist/release/SHA256SUMS
+            dist/release/source-manifest.json

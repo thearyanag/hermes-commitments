@@ -1,0 +1,25 @@
+__pycache__/
+*.pyc
+.hermes-dev/
+desktop-baseline/
+upstream-hermes/
+evaluation/runs/*/pre-state/
+.pytest_cache/
+.ruff_cache/
+dist/
+.ci-hermes/
+.venv/
+.env
+.env.*
+*.db
+*.db-*
+*.sqlite*
+.DS_Store
+# Local research, live transcripts, and machine-specific harnesses are not releases.
+evidence/
+evaluation/
+SPEC.md
+scripts/install_local.py
+tests/*probe.py
+tests/controlled_bot_delivery.py
+tests/fixtures/

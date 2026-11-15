@@ -1,0 +1,27 @@
+# Explicit public source inventory. No directory globs.
+.gitignore
+.github/workflows/ci.yml
+README.md
+LICENSE
+CHANGELOG.md
+CONTRIBUTING.md
+release-files.txt
+plugin.yaml
+__init__.py
+ledger.py
+policy.py
+host.py
+runtime.py
+desktop_bridge.py
+desktop/plugin.js
+docs/VALIDATION.md
+docs/RELEASING.md
+docs/catalog-entry.yaml.example
+docs/catalog-pr.md
+scripts/package_release.py
+tests/test_commitments.py
+tests/test_desktop_bridge.py
+tests/test_hermes_bridge.py
+tests/test_packaging.py
+tests/desktop_bridge.test.mjs
+tests/plugin_test_support.py
